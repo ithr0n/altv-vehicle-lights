@@ -42,7 +42,6 @@ alt.onClient("toggleIndicator", (player: alt.Player, indicatorID: number) => {
     }
 });
 
-/*
 // second try to "re-sync" meta for new connected players
 const globalSyncedMeta = new Map<alt.Entity, Map<string, any>>();
 alt.on('playerConnect', (player: alt.Player) => {
@@ -51,16 +50,17 @@ alt.on('playerConnect', (player: alt.Player) => {
             entity.setSyncedMeta(key, value);
         });
     });
+
+    alt.emitClient(player, 'resyncVehicleLights', globalSyncedMeta);
 });
 
 alt.on('removeEntity', (target: alt.Entity) => {
     if (globalSyncedMeta.has(target)) globalSyncedMeta.delete(target);
 });
-*/
 
 function globalSyncMeta(target: alt.Entity, key: string, value: any) {
-    //if (!globalSyncedMeta.has(target)) globalSyncedMeta.set(target, new Map());
+    if (!globalSyncedMeta.has(target)) globalSyncedMeta.set(target, new Map());
 
-    //globalSyncedMeta.get(target)!.set(key, value);
+    globalSyncedMeta.get(target)!.set(key, value);
     target.setSyncedMeta(key, value);
 }

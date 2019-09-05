@@ -5,13 +5,26 @@ import game from 'natives';
 
 const player = alt.Player.local;
 
-/*
-// first try to "re-sync" meta for new connected players
-for (let veh of alt.Vehicle.all) {
-    if (veh.getSyncedMeta('sirenDisabled'))
-        game.disableVehicleImpactExplosionActivation(veh.scriptID, true);
-}
-*/
+alt.onServer('resyncVehicleLights', () => {
+    // first try to "re-sync" meta for new connected players
+    for (let veh of alt.Vehicle.all) {
+        if (veh.getSyncedMeta('sirenDisabled'))
+            game.disableVehicleImpactExplosionActivation(veh.scriptID, veh.getSyncedMeta('sirenDisabled'));
+
+        if (veh.getSyncedMeta('IndicatorBoth')) {
+            game.setVehicleIndicatorLights(veh.scriptID, 0, veh.getSyncedMeta('IndicatorBoth'));
+            game.setVehicleIndicatorLights(veh.scriptID, 1, veh.getSyncedMeta('IndicatorBoth'));
+        }
+
+        if (veh.getSyncedMeta('IndicatorLeft')) {
+            game.setVehicleIndicatorLights(veh.scriptID, 0, veh.getSyncedMeta('IndicatorLeft'));
+        }
+
+        if (veh.getSyncedMeta('IndicatorRight')) {
+            game.setVehicleIndicatorLights(veh.scriptID, 1, veh.getSyncedMeta('IndicatorRight'));
+        }
+    }
+})
 
 alt.on('keydown', (key: number) => {
     switch (key) {
