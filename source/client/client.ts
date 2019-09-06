@@ -5,27 +5,6 @@ import game from 'natives';
 
 const player = alt.Player.local;
 
-alt.onServer('resyncVehicleLights', () => {
-    // first try to "re-sync" meta for new connected players
-    for (let veh of alt.Vehicle.all) {
-        if (veh.getSyncedMeta('sirenDisabled'))
-            game.disableVehicleImpactExplosionActivation(veh.scriptID, veh.getSyncedMeta('sirenDisabled'));
-
-        if (veh.getSyncedMeta('IndicatorBoth')) {
-            game.setVehicleIndicatorLights(veh.scriptID, 0, veh.getSyncedMeta('IndicatorBoth'));
-            game.setVehicleIndicatorLights(veh.scriptID, 1, veh.getSyncedMeta('IndicatorBoth'));
-        }
-
-        if (veh.getSyncedMeta('IndicatorLeft')) {
-            game.setVehicleIndicatorLights(veh.scriptID, 0, veh.getSyncedMeta('IndicatorLeft'));
-        }
-
-        if (veh.getSyncedMeta('IndicatorRight')) {
-            game.setVehicleIndicatorLights(veh.scriptID, 1, veh.getSyncedMeta('IndicatorRight'));
-        }
-    }
-})
-
 alt.on('keydown', (key: number) => {
     switch (key) {
         case 88: // X
@@ -67,11 +46,7 @@ alt.on('keydown', (key: number) => {
 alt.on("syncedMetaChange", (entity: alt.Vehicle, key: string, value: boolean) => {
     switch (key) {
         case "sirenDisabled":
-            if (value) {
-                game.disableVehicleImpactExplosionActivation(entity.scriptID, true);
-            } else {
-                game.disableVehicleImpactExplosionActivation(entity.scriptID, false);
-            }
+            game.disableVehicleImpactExplosionActivation(entity.scriptID, value);
             break;
 
         case "IndicatorBoth":
@@ -86,5 +61,26 @@ alt.on("syncedMetaChange", (entity: alt.Vehicle, key: string, value: boolean) =>
         case "IndicatorLeft":
             game.setVehicleIndicatorLights(entity.scriptID, 1, value);
             break;
+    }
+});
+
+alt.on('update', () => {
+    for (let veh of alt.Vehicle.all) {
+        if (veh.getSyncedMeta('sirenDisabled')) {
+            game.disableVehicleImpactExplosionActivation(veh.scriptID, veh.getSyncedMeta('sirenDisabled'));
+        }
+
+        if (veh.getSyncedMeta('IndicatorBoth')) {
+            game.setVehicleIndicatorLights(veh.scriptID, 0, veh.getSyncedMeta('IndicatorBoth'));
+            game.setVehicleIndicatorLights(veh.scriptID, 1, veh.getSyncedMeta('IndicatorBoth'));
+        }
+
+        if (veh.getSyncedMeta('IndicatorRight')) {
+            game.setVehicleIndicatorLights(veh.scriptID, 0, veh.getSyncedMeta('IndicatorRight'));
+        }
+
+        if (veh.getSyncedMeta('IndicatorLeft')) {
+            game.setVehicleIndicatorLights(veh.scriptID, 1, veh.getSyncedMeta('IndicatorLeft'));
+        }
     }
 });
